@@ -1,5 +1,5 @@
 # OpenStack-Install
-一、安装环境
+# 一、安装环境
 1、配置hosts文件，配置好网卡(all nodes)
 controller 192.168.100.10 #192.168.200.10
 compute    192.168.100.20 #192.168.200.20
@@ -60,20 +60,21 @@ ETCD_INITIAL_CLUSTER_STATE="new"
 EOF
 systemctl enable etcd && systemctl start etcd
  
-二、Mini最小安装
+# 二、Mini最小安装
 1、认证服务（Identity service）
 mysql -e "CREATE DATABASE keystone;"
 mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '123456'"
 mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '123456'"
 yum install openstack-keystone httpd mod_wsgi -y
 cp /etc/keystone/keystone.conf{,.bak}
-sed -i 's/\[database\]/a\connection = mysql+pymysql://keystone:123456@controller/keystone /etc/keystone/keystone.conf
-sed -i 's/\[token\]/a\provider = fernet /etc/keystone/keystone.conf
+crudini --set /etc/keystone/keystone.conf database connection  mysql+pymysql://keystone:123456@controller/keystone
+
+sed -i '\[token\]/a\provider = fernet' /etc/keystone/keystone.conf
 su -s /bin/sh -c "keystone-manage db_sync" keystone
-# 初始化Fernet key库
+#初始化Fernet key库
 keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
 keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
-# Bootstrap the Identity service:
+#Bootstrap the Identity service:
 
 2、镜像服务（Image service）
 
