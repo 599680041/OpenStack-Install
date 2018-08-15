@@ -1,4 +1,6 @@
 ## OpenStack-Install
+## 目录
+[TOC]
 ## 一、安装环境
 ## 1、配置hosts文件，配置好网卡(all nodes)
  HOST       |    IP
@@ -6,7 +8,6 @@
  controller |192.168.100.10 #192.168.200.10
  compute    |192.168.100.20 #192.168.200.20
 ## 2、关闭防火墙、SELinux（略）
- 
 ## 3、安装NTP服务
 ``` shell
  yum install chrony -y
@@ -16,7 +17,9 @@
  其他节点节点编辑/etc/chrony.conf
  server controller iburst
  systemctl enable chronyd.service && systemctl start chronyd.service
+ ```
 ## 4、准备OpenStack安装包(all nodes)
+``` shell
  yum install centos-release-openstack-queens -y && yum upgrade -y && yum install python-openstackclient openstack-selinux openstack-utils
 ```
 ## 5、安装Database服务（MySQL）（controller）
@@ -147,7 +150,7 @@
  mysql -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '123456'";
  mysql -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '123456'";
  openstack user create --domain default --password-prompt glance
- 输入密码123456
+ #输入密码123456
  openstack role add --project service --user glance admin
  openstack service create --name glance --description "OpenStack Image" image
  openstack endpoint create --region RegionOne image public http://controller:9292
@@ -188,8 +191,8 @@
  systemctl start openstack-glance-api.service openstack-glance-registry.service
  ```
 ## 3、计算服务（Compute service）
-``` shell
 #### 先配置controller
+``` shell
  mysql -e "CREATE DATABASE nova_api;"
  mysql -e "CREATE DATABASE nova;"
  mysql -e "CREATE DATABASE nova_cell0;"
@@ -200,14 +203,14 @@
  mysql -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY '123456';"
  mysql -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY '123456';"
  openstack user create --domain default --password-prompt nova
-  输入密码123456
+ #输入密码123456
  openstack role add --project service --user nova admin
  openstack service create --name nova --description "OpenStack Compute" compute
  openstack endpoint create --region RegionOne compute public http://controller:8774/v2.1
  openstack endpoint create --region RegionOne compute internal http://controller:8774/v2.1
  openstack endpoint create --region RegionOne compute admin http://controller:8774/v2.1
  openstack user create --domain default --password-prompt placement
-  输入密码123456
+ #输入密码123456
  openstack role add --project service --user placement admin
  openstack service create --name placement --description "Placement API" placement
  openstack endpoint create --region RegionOne placement public http://controller:8778
@@ -315,6 +318,7 @@ systemctl restart httpd
  su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
  ```
 ## 4、网络服务（Network service）
+
 ### 配置controller
 5、Horizon（Dashboard）
 
