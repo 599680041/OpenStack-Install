@@ -1,6 +1,6 @@
 ## OpenStack-Install
 ## 目录
-`[TOC]`
+[TOC]
 ## 一、安装环境
 ## 1、配置hosts文件，配置好网卡(all nodes)
  HOST       |    IP
