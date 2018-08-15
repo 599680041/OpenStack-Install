@@ -1,8 +1,10 @@
-# OpenStack-Install
-# 一、安装环境
+## OpenStack-Install
+## 一、安装环境
 ## 1、配置hosts文件，配置好网卡(all nodes)
- controller 192.168.100.10 #192.168.200.10
- compute    192.168.100.20 #192.168.200.20
+ HOST       |    IP
+ ----------|----------
+ controller |192.168.100.10 #192.168.200.10
+ compute    |192.168.100.20 #192.168.200.20
 ## 2、关闭防火墙、SELinux（略）
  
 ## 3、安装NTP服务
