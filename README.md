@@ -1,5 +1,4 @@
 ## OpenStack-Install
----
 ## 一、安装环境
 ## 1、配置hosts文件，配置好网卡(all nodes)
  HOST       |    IP
@@ -9,6 +8,7 @@
 ## 2、关闭防火墙、SELinux（略）
  
 ## 3、安装NTP服务
+``` shell
  yum install chrony -y
  controller控制节点编辑/etc/chrony.conf
  allow 192.168.100.0/24
@@ -18,8 +18,9 @@
  systemctl enable chronyd.service && systemctl start chronyd.service
 ## 4、准备OpenStack安装包(all nodes)
  yum install centos-release-openstack-queens -y && yum upgrade -y && yum install python-openstackclient openstack-selinux openstack-utils
-
+```
 ## 5、安装Database服务（MySQL）（controller）
+``` shell
  yum install mariadb mariadb-server python2-PyMySQL -y
  cat <<EOF > /etc/my.cnf.d/openstack.cnf
  [mysqld]
@@ -32,19 +33,25 @@
  EOF
  systemctl enable mariadb.service && systemctl start mariadb.service
  mysql_secure_installation
+```
 
 ## 6、安装消息队列服务（controller）
+``` shell
  yum install rabbitmq-server -y
  systemctl enable rabbitmq-server.service && systemctl start rabbitmq-server.service
  rabbitmqctl add_user openstack 123456
  rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+```
 
 ## 7、安装缓存服务（controller）
+``` shell
  yum install memcached python-memcached -y
  sed -i 's/OPTIONS="-l 127.0.0.1,::1"/OPTIONS="-l 127.0.0.1,::1,controller"/g' /etc/sysconfig/memcached 
  systemctl enable memcached.service && systemctl start memcached.service
+```
 
 ## 8、安装Etcd数据库（controller）
+``` shell
  yum install etcd -y
  cat <<EOF >/etc/etcd/etcd.conf
  #[Member]
@@ -60,9 +67,11 @@
  ETCD_INITIAL_CLUSTER_STATE="new"
  EOF
  systemctl enable etcd && systemctl start etcd
+ ```
  
 # 二、Mini最小安装
 ## 1、认证服务（Identity service）
+``` shell
  mysql -e "CREATE DATABASE keystone;"
  mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '123456'"
  mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '123456'"
@@ -130,7 +139,10 @@
  export OS_IMAGE_API_VERSION=2
  . admin-openrc
  openstack token issue
+ ```
+ 
 ## 2、镜像服务（Image service）
+``` shell
  mysql -e "CREATE DATABASE glance;"
  mysql -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '123456'";
  mysql -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '123456'";
@@ -174,7 +186,9 @@
  su -s /bin/sh -c "glance-manage db_sync" glance
  systemctl enable openstack-glance-api.service openstack-glance-registry.service
  systemctl start openstack-glance-api.service openstack-glance-registry.service
+ ```
 ## 3、计算服务（Compute service）
+``` shell
 #### 先配置controller
  mysql -e "CREATE DATABASE nova_api;"
  mysql -e "CREATE DATABASE nova;"
@@ -299,6 +313,7 @@ systemctl restart httpd
  . admin-openrc
  openstack compute service list --service nova-compute
  su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
+ ```
 ## 4、网络服务（Network service）
 ### 配置controller
 5、Horizon（Dashboard）
