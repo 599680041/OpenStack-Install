@@ -1,6 +1,4 @@
 ## OpenStack-Install
-## 目录
-[TOC]
 ## 一、安装环境
 ## 1、配置hosts文件，配置好网卡(all nodes)
  HOST       |    IP
@@ -318,9 +316,15 @@ systemctl restart httpd
  su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
  ```
 ## 4、网络服务（Network service）
-
 ### 配置controller
-5、Horizon（Dashboard）
 
-6、块存储服务（Block Storage service）
-参考官方文档/附地址：https://docs.openstack.org/install-guide
+### 配置compute
+
+## 5、Horizon（Dashboard）
+
+## 6、创建instance实例
+
+## 7、块存储服务（Block Storage service）
+参考官方文档/附地址：[https://docs.openstack.org/install-guide][1]
+
+[1]:https://docs.openstack.org/install-guide
