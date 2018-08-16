@@ -452,34 +452,34 @@ systemctl enable neutron-linuxbridge-agent.service && systemctl start neutron-li
 ## 6、创建instance实例
 
 - 创建provider外部网络
-. admin-openrc
+> . admin-openrc
 openstack network create --share --external \
   --provider-physical-network provider \
   --provider-network-type flat provider
 - 创建子网
-openstack subnet create --network provider \
+> openstack subnet create --network provider \
   --allocation-pool start=192.168.100.80,end=192.168.100.90 \
   --dns-nameserver 114.114.114.114 --gateway 192.168.100.254 \
   --subnet-range 192.168.200.0/24 provider
 - 创建路由器
-openstack router create router
+> openstack router create router
 - 租户网络添加到路由器
-neutron router-interface-add router selfservice
+> neutron router-interface-add router selfservice
 - 路由器连接到外部网络
-neutron router-gateway-set router provider
+> neutron router-gateway-set router provider
 - 创建实例类型
-openstack flavor create --id 0 --vcpus 1 --ram 1024 --disk 1 m1.nano
-openstack flavor create --id 0 --vcpus 1 --ram 1000 --disk 1 m2.nano
+> openstack flavor create --id 0 --vcpus 1 --ram 1024 --disk 1 m1.nano
+> openstack flavor create --id 0 --vcpus 1 --ram 1000 --disk 1 m2.nano
 - 生成秘钥对
-ssh-keygen -q -N ""
+> ssh-keygen -q -N ""
 openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
 - 添加安全组规则
-openstack security group rule create --proto icmp default
+> openstack security group rule create --proto icmp default
 openstack security group rule create --proto tcp --dst-port 22 default
 - 上传镜像
-glance image-create --name "cirros" --disk-format qcow2 --container-format bare --progress<./cirros-0.3.4-x86_64-disk.img
+> glance image-create --name "cirros" --disk-format qcow2 --container-format bare --progress<./cirros-0.3.4-x86_64-disk.img
 - 创建实例
-openstack server create --flavor m1.nano --image cirros \
+> openstack server create --flavor m1.nano --image cirros \
   --nic net-id=*** --security-group default \
   --key-name mykey selfservice1-cirros1
 
