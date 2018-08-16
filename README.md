@@ -262,7 +262,7 @@ cat>>/etc/httpd/conf.d/00-nova-placement-api.conf<<EOF
 EOF
 systemctl restart httpd
 ```
-  #同步数据库报错，好像不影响，数据表都在
+>  #同步数据库报错，好像不影响，数据表都在
   #/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py:332: NotSupportedWarning: Configuration option(s) ['use_tpool'] not #supported
   #exception.NotSupportedWarning
   #如果说看着不爽，可以到源码中将这段判断注释掉/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py的325:333行
