@@ -410,26 +410,78 @@ systemctl enable neutron-l3-agent.service && systemctl start neutron-l3-agent.se
 
 ### 配置compute
 ``` shell
-yum install openstack-neutron-linuxbridge ebtables ipset
+yum install openstack-neutron-linuxbridge ebtables ipset -y
+crudini --set /etc/neutron/neutron.conf DEFAULT transport_url = rabbit://openstack:123456@controller
+crudini --set /etc/neutron/neutron.conf DEFAULT auth_strategy = keystone
 
+crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_uri = http://controller:5000
+crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_url = http://controller:35357
+crudini --set /etc/neutron/neutron.conf keystone_authtoken memcached_servers = controller:11211
+crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_type = password
+crudini --set /etc/neutron/neutron.conf keystone_authtoken project_domain_name = default
+crudini --set /etc/neutron/neutron.conf keystone_authtoken user_domain_name = default
+crudini --set /etc/neutron/neutron.conf keystone_authtoken project_name = service
+crudini --set /etc/neutron/neutron.conf keystone_authtoken username = neutron
+crudini --set /etc/neutron/neutron.conf keystone_authtoken password = 123456
+crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path = /var/lib/neutron/tmp
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan enable_vxlan = true
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan local_ip = 192.168.100.20
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan l2_population = true
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini securitygroup enable_security_group = true
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini securitygroup firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
-
-
-
-
-
-
-
-
-
-
+crudini --set /etc/nova/nova.conf neutron url = http://controller:9696
+crudini --set /etc/nova/nova.conf neutron auth_url = http://controller:35357
+crudini --set /etc/nova/nova.conf neutron auth_type = password
+crudini --set /etc/nova/nova.conf neutron project_domain_name = default
+crudini --set /etc/nova/nova.conf neutron user_domain_name = default
+crudini --set /etc/nova/nova.conf neutron region_name = RegionOne
+crudini --set /etc/nova/nova.conf neutron project_name = service
+crudini --set /etc/nova/nova.conf neutron username = neutron
+crudini --set /etc/nova/nova.conf neutron password = 123456
+modprobe br_netfilter
+sysctl net.bridge.bridge-nf-call-iptables
+sysctl net.bridge.bridge-nf-call-ip6tables
+systemctl restart openstack-nova-compute.service
+systemctl enable neutron-linuxbridge-agent.service && systemctl start neutron-linuxbridge-agent.service
 
 ```
-> afds 
-sdfsdf
+
 ## 5、Horizon（Dashboard）
 
 ## 6、创建instance实例
+
+- 创建provider外部网络
+. admin-openrc
+openstack network create --share --external \
+  --provider-physical-network provider \
+  --provider-network-type flat provider
+- 创建子网
+openstack subnet create --network provider \
+  --allocation-pool start=192.168.100.80,end=192.168.100.90 \
+  --dns-nameserver 114.114.114.114 --gateway 192.168.100.254 \
+  --subnet-range 192.168.200.0/24 provider
+- 创建路由器
+openstack router create router
+- 租户网络添加到路由器
+neutron router-interface-add router selfservice
+- 路由器连接到外部网络
+neutron router-gateway-set router provider
+- 创建实例类型
+openstack flavor create --id 0 --vcpus 1 --ram 1024 --disk 1 m1.nano
+openstack flavor create --id 0 --vcpus 1 --ram 1000 --disk 1 m2.nano
+- 生成秘钥对
+ssh-keygen -q -N ""
+openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
+- 添加安全组规则
+openstack security group rule create --proto icmp default
+openstack security group rule create --proto tcp --dst-port 22 default
+- 上传镜像
+glance image-create --name "cirros" --disk-format qcow2 --container-format bare --progress<./cirros-0.3.4-x86_64-disk.img
+- 创建实例
+openstack server create --flavor m1.nano --image cirros \
+  --nic net-id=*** --security-group default \
+  --key-name mykey selfservice1-cirros1
 
 ## 7、块存储服务（Block Storage service）
 
