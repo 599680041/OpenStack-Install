@@ -411,8 +411,7 @@ systemctl enable neutron-l3-agent.service && systemctl start neutron-l3-agent.se
 ``` shell
 yum install openstack-neutron-linuxbridge ebtables ipset
 
-> afds 
-sdfsdf
+
 
 
 
@@ -425,6 +424,8 @@ sdfsdf
 
 
 ```
+> afds 
+sdfsdf
 ## 5、Horizon（Dashboard）
 
 ## 6、创建instance实例
