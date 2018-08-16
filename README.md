@@ -261,10 +261,11 @@ cat>>/etc/httpd/conf.d/00-nova-placement-api.conf<<EOF
 </Directory>
 EOF
 systemctl restart httpd
-#同步数据库报错，好像不影响，数据表都在
-#/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py:332: NotSupportedWarning: Configuration option(s) ['use_tpool'] not #supported
-#exception.NotSupportedWarning
-#如果说看着不爽，可以到源码中将这段判断注释掉/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py的325:333行
+  #同步数据库报错，好像不影响，数据表都在
+  #/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py:332: NotSupportedWarning: Configuration option(s) ['use_tpool'] not #supported
+  #exception.NotSupportedWarning
+  #如果说看着不爽，可以到源码中将这段判断注释掉/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py的325:333行
+
  su -s /bin/sh -c "nova-manage api_db sync" nova
  su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
  su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
@@ -377,12 +378,52 @@ crudini --set /etc/neutron/l3_agent.ini ml2 l2_population = true
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT interface_driver = linuxbridge
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT enable_isolated_metadata = true
+
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT l2_population = true
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT l2_population = true
+crudini --set /etc/neutron/l3_agent.ini ml2 nova_metadata_host = controller
+crudini --set /etc/neutron/l3_agent.ini ml2 metadata_proxy_shared_secret = 123456
+crudini --set /etc/nova/nova.conf neutron url = http://controller:9696
+crudini --set /etc/nova/nova.conf neutron auth_url = http://controller:35357
+crudini --set /etc/nova/nova.conf neutron project_domain_name = default
+crudini --set /etc/nova/nova.conf neutron user_domain_name = default
+crudini --set /etc/nova/nova.conf neutron region_name = RegionOne
+crudini --set /etc/nova/nova.conf neutron project_name = service
+crudini --set /etc/nova/nova.conf neutron username = neutron
+crudini --set /etc/nova/nova.conf neutron password = 123456
+crudini --set /etc/nova/nova.conf neutron service_metadata_proxy = true
+crudini --set /etc/nova/nova.conf neutron metadata_proxy_shared_secret = 123456
+
+ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
+su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf   --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
+systemctl restart openstack-nova-api.service
+systemctl enable neutron-server.service \
+  neutron-linuxbridge-agent.service neutron-dhcp-agent.service \
+  neutron-metadata-agent.service
+systemctl start neutron-server.service \
+  neutron-linuxbridge-agent.service neutron-dhcp-agent.service \
+  neutron-metadata-agent.service
+systemctl enable neutron-l3-agent.service && systemctl start neutron-l3-agent.service
+
 ```
 
 ### 配置compute
 ``` shell
 yum install openstack-neutron-linuxbridge ebtables ipset
 
+
+
+
+
+
+
+
+
+
+
+
+
+```
 ## 5、Horizon（Dashboard）
 
 ## 6、创建instance实例
@@ -393,6 +434,6 @@ yum install openstack-neutron-linuxbridge ebtables ipset
 
 
 
-参考官方文档/附地址：[https://docs.openstack.org/install-guide][1]
+参考官方文档 附地址：[https://docs.openstack.org/install-guide][1]
 
 [1]:https://docs.openstack.org/install-guide
