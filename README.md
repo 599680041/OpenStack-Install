@@ -119,7 +119,7 @@ openstack --os-auth-url http://controller:5000/v3 \
 --os-project-name demo --os-username demo token issue
 输入密码123456
 #配置admin认证脚本避免每次加--os选项
-cat <<EOF > admin-openrc.sh
+cat <<EOF > admin-openrc
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
@@ -129,7 +129,7 @@ export OS_AUTH_URL=http://controller:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 EOF
-cat <<EOF > demon-openrc.sh
+cat <<EOF > demon-openrc
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=demo
