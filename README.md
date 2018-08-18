@@ -172,6 +172,8 @@ crudini --set /etc/glance/glance-api.conf glance_store stores file,http
 crudini --set /etc/glance/glance-api.conf glance_store default_store file
 crudini --set /etc/glance/glance-api.conf glance_store filesystem_store_datadir /var/lib/glance/images/
 
+
+/etc/glance/glance-registry.conf{,.bak}
 #Edit /etc/glance/glance-registry.conf
 crudini --set /etc/glance/glance-registry.conf database connection mysql+pymysql://glance:123456@controller/glance
 crudini --set /etc/glance/glance-registry.conf keystone_authtoken auth_uri  http://controller:5000
@@ -217,8 +219,9 @@ openstack endpoint create --region RegionOne placement internal http://controlle
 openstack endpoint create --region RegionOne placement admin http://controller:8778
 yum install openstack-nova-api openstack-nova-conductor \
 openstack-nova-console openstack-nova-novncproxy \
-openstack-nova-scheduler openstack-nova-placement-api
+openstack-nova-scheduler openstack-nova-placement-api -y
 #修改NOVA配置文件
+cp /etc/nova/nova.conf{,.bak}
 crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:123456@controller/nova_api
 crudini --set /etc/nova/nova.conf database connection mysql+pymysql://nova:123456@controller/nova
@@ -282,6 +285,7 @@ openstack-nova-conductor.service openstack-nova-novncproxy.service
 
 #配置（compute）
 yum install openstack-nova-compute -y
+vi /etc/nova/nova.conf{,.bak}
 crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
 crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:123456@controller
 crudini --set /etc/nova/nova.conf api auth_strategy keystone
@@ -334,6 +338,7 @@ openstack endpoint create --region RegionOne network internal http://controller:
 openstack endpoint create --region RegionOne network admin http://controller:9696
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables -y
 
+vi /etc/neutron/neutron.conf{,.bak}
 crudini --set /etc/neutron/neutron.conf database connection mysql+pymysql://neutron:123456@controller/neutron
 crudini --set /etc/neutron/neutron.conf DEFAULT core_plugin ml2
 crudini --set /etc/neutron/neutron.conf DEFAULT service_plugins router
@@ -360,6 +365,8 @@ crudini --set /etc/neutron/neutron.conf nova project_name service
 crudini --set /etc/neutron/neutron.conf nova username nova
 crudini --set /etc/neutron/neutron.conf nova password 123456
 crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path /var/lib/neutron/tmp
+
+cp /etc/neutron/plugins/ml2/ml2_conf.ini{,.bak}
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers lat,vlan,vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers linuxbridge,l2population
@@ -367,6 +374,8 @@ crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_s
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks provider
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vxlan vni_ranges 1:1000
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini securitygroup enable_ipset true
+
+cp /etc/neutron/plugins/ml2/linuxbridge_agent.ini{,.bak}
 crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini linux_bridge physical_interface_mappings provider:eno16777736
 crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan enable_vxlan true
 crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan local_ip 192.168.100.10
@@ -377,10 +386,13 @@ modprobe br_netfilter
 sysctl net.bridge.bridge-nf-call-iptables
 sysctl net.bridge.bridge-nf-call-ip6tables
 crudini --set /etc/neutron/l3_agent.ini DEFAULT interface_driver linuxbridge
+
+cp /etc/neutron/dhcp_agent.ini{,.bak}
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT interface_driver linuxbridge
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_driver neutron.agent.linux.dhcp.Dnsmasq
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT enable_isolated_metadata true
 
+cp /etc/neutron/metadata_agent.ini{,.bak}
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT nova_metadata_host controller
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT metadata_proxy_shared_secret 123456
 
@@ -410,9 +422,9 @@ systemctl enable neutron-l3-agent.service && systemctl start neutron-l3-agent.se
 ### 配置compute
 ``` shell
 yum install openstack-neutron-linuxbridge ebtables ipset -y
+cp /etc/neutron/neutron.conf{,.bak}
 crudini --set /etc/neutron/neutron.conf DEFAULT transport_url rabbit://openstack:123456@controller
 crudini --set /etc/neutron/neutron.conf DEFAULT auth_strategy keystone
-
 crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_uri http://controller:5000
 crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_url http://controller:35357
 crudini --set /etc/neutron/neutron.conf keystone_authtoken memcached_servers controller:11211
@@ -423,6 +435,8 @@ crudini --set /etc/neutron/neutron.conf keystone_authtoken project_name service
 crudini --set /etc/neutron/neutron.conf keystone_authtoken username neutron
 crudini --set /etc/neutron/neutron.conf keystone_authtoken password 123456
 crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path /var/lib/neutron/tmp
+
+cp /etc/neutron/plugins/ml2/linuxbridge_agent.ini{,.bak}
 crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan enable_vxlan true
 crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan local_ip 192.168.100.20
 crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan l2_population true
