@@ -57,7 +57,7 @@ yum install etcd -y
 cat <<EOF >/etc/etcd/etcd.conf
 #[Member]
 ETCD_DATA_DIR="/var/lib/etcd/default.etcd"
-ETCD_LISTEN_PEER_URLS="http://192.168.100.100:2380"
+ETCD_LISTEN_PEER_URLS="http://192.168.100.10:2380"
 ETCD_LISTEN_CLIENT_URLS="http://192.168.100.10:2379"
 ETCD_NAME="controller"
 #[Clustering]
@@ -138,6 +138,7 @@ export OS_PASSWORD=123456
 export OS_AUTH_URL=http://controller:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
+EOF
 . admin-openrc
 openstack token issue
 ```
