@@ -285,7 +285,7 @@ openstack-nova-conductor.service openstack-nova-novncproxy.service
 
 #配置（compute）
 yum install openstack-nova-compute -y
-vi /etc/nova/nova.conf{,.bak}
+cp /etc/nova/nova.conf{,.bak}
 crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
 crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:123456@controller
 crudini --set /etc/nova/nova.conf api auth_strategy keystone
