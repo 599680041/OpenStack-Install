@@ -297,7 +297,7 @@ crudini --set /etc/nova/nova.conf keystone_authtoken user_domain_name default
 crudini --set /etc/nova/nova.conf keystone_authtoken project_name service
 crudini --set /etc/nova/nova.conf keystone_authtoken enabled_apis username nova
 crudini --set /etc/nova/nova.conf keystone_authtoken password 123456
-crudini --set /etc/nova/nova.conf DEFAULT my_ip = 192.168.100.20
+crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.100.20
 crudini --set /etc/nova/nova.conf DEFAULT use_neutron True
 crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 crudini --set /etc/nova/nova.conf vnc enabled True
@@ -305,7 +305,7 @@ crudini --set /etc/nova/nova.conf vnc server_listen 0.0.0.0
 crudini --set /etc/nova/nova.conf vnc server_proxyclient_address $my_ip
 crudini --set /etc/nova/nova.conf vnc novncproxy_base_url http://controller:6080/vnc_auto.html
 crudini --set /etc/nova/nova.conf glance api_servers http://controller:9292
-crudini --set /etc/nova/nova.conf oslo_concurrency lock_path = /var/lib/nova/tmp 
+crudini --set /etc/nova/nova.conf oslo_concurrency lock_path /var/lib/nova/tmp 
 crudini --set /etc/nova/nova.conf placement os_region_name RegionOne
 crudini --set /etc/nova/nova.conf placement project_domain_name Default
 crudini --set /etc/nova/nova.conf placement project_name service
