@@ -474,6 +474,12 @@ openstack network create --share --external \
 --allocation-pool start=192.168.100.80,end=192.168.100.90 \
 --dns-nameserver 114.114.114.114 --gateway 192.168.100.254 \
 --subnet-range 192.168.200.0/24 provider
+- 创建租户网络
+> openstack network create selfservice1
+- 创建租户子网
+> openstack subnet create --network selfservice1 \
+  --dns-nameserver 114.114.114.114 --gateway 172.16.1.1 \
+  --subnet-range 172.16.1.0/24 selfservice1-net1
 - 创建路由器
 > openstack router create router
 - 租户网络添加到路由器
