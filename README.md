@@ -231,7 +231,7 @@ crudini --set /etc/nova/nova.conf keystone_authtoken auth_url http://controller:
 crudini --set /etc/nova/nova.conf keystone_authtoken memcached_servers controller:11211
 crudini --set /etc/nova/nova.conf keystone_authtoken auth_type password
 crudini --set /etc/nova/nova.conf keystone_authtoken project_domain_name default
-crudini --set /etc/nova/nova.conf keystone_authtoken euser_domain_name default
+crudini --set /etc/nova/nova.conf keystone_authtoken user_domain_name default
 crudini --set /etc/nova/nova.conf keystone_authtoken project_name service
 crudini --set /etc/nova/nova.conf keystone_authtoken username nova
 crudini --set /etc/nova/nova.conf keystone_authtoken password 123456
@@ -367,7 +367,7 @@ crudini --set /etc/neutron/neutron.conf nova password 123456
 crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path /var/lib/neutron/tmp
 
 cp /etc/neutron/plugins/ml2/ml2_conf.ini{,.bak}
-crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers lat,vlan,vxlan
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers flat,vlan,vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers linuxbridge,l2population
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security
@@ -466,14 +466,14 @@ systemctl enable neutron-linuxbridge-agent.service && systemctl start neutron-li
 
 - 创建provider外部网络
 > . admin-openrc
-openstack network create --share --external \
+> openstack network create --share --external \
 --provider-physical-network provider \
 --provider-network-type flat provider
 - 创建子网
 > openstack subnet create --network provider \
 --allocation-pool start=192.168.100.80,end=192.168.100.90 \
 --dns-nameserver 114.114.114.114 --gateway 192.168.100.254 \
---subnet-range 192.168.200.0/24 provider
+--subnet-range 192.168.100.0/24 provider
 - 创建租户网络
 > openstack network create selfservice1
 - 创建租户子网
