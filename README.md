@@ -236,8 +236,8 @@ crudini --set /etc/nova/nova.conf keystone_authtoken project_name service
 crudini --set /etc/nova/nova.conf keystone_authtoken username nova
 crudini --set /etc/nova/nova.conf keystone_authtoken password 123456
 crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.100.10
-crudini --set /etc/nova/nova.conf use_neutron True
-crudini --set /etc/nova/nova.conf firewall_driver nova.virt.firewall.NoopFirewallDriver
+crudini --set /etc/nova/nova.conf DEFAULT use_neutron True
+crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 crudini --set /etc/nova/nova.conf vnc enabled true
 crudini --set /etc/nova/nova.conf vnc server_listen $my_ip
 crudini --set /etc/nova/nova.conf vnc server_proxyclient_address $my_ip
