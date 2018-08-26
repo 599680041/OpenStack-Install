@@ -173,7 +173,7 @@ crudini --set /etc/glance/glance-api.conf glance_store default_store file
 crudini --set /etc/glance/glance-api.conf glance_store filesystem_store_datadir /var/lib/glance/images/
 
 
-/etc/glance/glance-registry.conf{,.bak}
+cp /etc/glance/glance-registry.conf{,.bak}
 #Edit /etc/glance/glance-registry.conf
 crudini --set /etc/glance/glance-registry.conf database connection mysql+pymysql://glance:123456@controller/glance
 crudini --set /etc/glance/glance-registry.conf keystone_authtoken auth_uri  http://controller:5000
@@ -338,7 +338,7 @@ openstack endpoint create --region RegionOne network internal http://controller:
 openstack endpoint create --region RegionOne network admin http://controller:9696
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables -y
 
-vi /etc/neutron/neutron.conf{,.bak}
+cp /etc/neutron/neutron.conf{,.bak}
 crudini --set /etc/neutron/neutron.conf database connection mysql+pymysql://neutron:123456@controller/neutron
 crudini --set /etc/neutron/neutron.conf DEFAULT core_plugin ml2
 crudini --set /etc/neutron/neutron.conf DEFAULT service_plugins router
